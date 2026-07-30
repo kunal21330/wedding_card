@@ -2,84 +2,352 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#641d37" />
-    <meta name="description" content="Join us as Vishal and Pari begin their forever." />
-    <meta property="og:title" content="Vishal weds Pari" />
-    <meta property="og:description" content="With joyful hearts, we invite you to celebrate our wedding." />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <meta name="theme-color" content="#3B0D18" />
+    <meta name="description" content="Vishal & Pari joyfully invite you to celebrate their wedding in Jaipur on February 14, 2027." />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Vishal weds Pari — Wedding Invitation" />
+    <meta property="og:description" content="With joyful hearts & blessings of our families, we invite you to celebrate our wedding. 14th February 2027 · Jaipur." />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80" />
     <meta property="og:type" content="website" />
+    
     <title>Vishal weds Pari | Wedding Invitation</title>
+    
+    <!-- Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=WindSong:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+    
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <section class="opening-screen" id="opening-screen" aria-label="Open the invitation">
-      <div class="opening-glow" aria-hidden="true"></div><p class="opening-small">Vishal &amp; Pari</p>
-      <div class="seal-track" aria-hidden="true"></div><button id="open-invitation" class="seal paper-seal" aria-label="Swipe up to break Vishal and Pari's invitation seal"><span>VP</span><i>✦</i></button>
-      <p class="opening-prompt">Swipe the seal up to open <b>↑</b></p><div class="opening-vines" aria-hidden="true">❦ &nbsp; ✿ &nbsp; ❦</div>
-    </section>
-    <div class="petals" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-    <header class="hero" id="home">
-      <nav class="nav"><a href="#home" class="monogram" aria-label="Home">V <span>♡</span> P</a><button class="music-toggle" id="music-toggle" aria-label="Play background music" aria-pressed="false"><span class="sound-bars" aria-hidden="true"><i></i><i></i><i></i></span><b>Sound</b></button></nav>
-      <div class="hero-flower flower-one" aria-hidden="true">✾</div><div class="hero-flower flower-two" aria-hidden="true">✾</div>
-      <div class="hero-content">
-        <p class="eyebrow hero-reveal">Together with our families</p>
-        <p class="invitation hero-reveal">joyfully invite you to celebrate</p>
-        <h1 class="hero-reveal"><span>Vishal</span><em>&amp;</em><span>Pari</span></h1>
-        <p class="date hero-reveal">Sunday, 14 February 2027</p>
-        <p class="scroll-cue hero-reveal">An invitation for you</p>
+    <!-- Canvas for Floating Ambient Gold Dust & Petals -->
+    <canvas id="ambient-canvas" class="ambient-canvas" aria-hidden="true"></canvas>
+
+    <!-- 3D Envelope Entry Screen -->
+    <section class="entry-screen" id="entry-screen" aria-label="Interactive Wedding Invitation Envelope">
+      <div class="envelope-wrapper">
+        <div class="envelope-3d" id="envelope-3d">
+          <div class="env-back"></div>
+          
+          <!-- Card Inside Envelope -->
+          <div class="env-card" id="env-card">
+            <div class="card-inner">
+              <div class="card-border">
+                <span class="card-monogram">V <span>♡</span> P</span>
+                <p class="card-sub">WEDDING INVITATION</p>
+                <h2 class="card-names">Vishal <i>&amp;</i> Pari</h2>
+                <p class="card-date">14 · 02 · 2027</p>
+                <p class="card-venue">JAIPUR, RAJASTHAN</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="env-side env-left"></div>
+          <div class="env-side env-right"></div>
+          <div class="env-bottom"></div>
+          <div class="env-top" id="env-top"></div>
+
+          <!-- Breakable Wax Seal -->
+          <div class="wax-seal-container" id="wax-seal-container" role="button" tabindex="0" aria-label="Tap to break seal and open invitation">
+            <div class="wax-seal-wrapper">
+              <div class="seal-half left-half">
+                <div class="seal-texture"><span class="seal-text-mono">V</span></div>
+              </div>
+              <div class="seal-half right-half">
+                <div class="seal-texture"><span class="seal-text-mono">&amp; P</span></div>
+              </div>
+              <div class="seal-gold-ring"></div>
+            </div>
+            
+            <div class="seal-prompt">
+              <span class="prompt-icon">✦</span>
+              <span class="prompt-text">Tap or Swipe Up to Open</span>
+              <div class="prompt-arrows"><i></i><i></i></div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="hero-arch" aria-hidden="true"></div><div class="envelope-flap" aria-hidden="true"></div><div class="envelope-front" aria-hidden="true"></div><button class="hero-seal" id="envelope-open" aria-label="Open the envelope"><span>V</span><i>&amp;</i><span>P</span></button>
-    </header>
+    </section>
 
-    <main>
-      <section class="intro section-shell" id="story">
-        <p class="eyebrow reveal">A little love story</p>
-        <h2 class="reveal">A thousand little moments,<br /><i>one beautiful forever.</i></h2>
-        <p class="intro-copy reveal">Some stories are written in the stars. Ours began with a smile, grew through laughter, and led us to this most wonderful chapter. We would be honoured to have you there as we say “I do”.</p>
-        <div class="ornament reveal" aria-hidden="true">❦</div>
-      </section>
+    <!-- Main Invitation Shell -->
+    <div class="site-shell" id="site-shell">
+      <!-- Fixed Minimal Navigation Header -->
+      <header class="top-nav">
+        <div class="nav-container">
+          <a class="nav-monogram" href="#hero">V <span>♡</span> P</a>
+          
+          <button class="music-toggle" id="music-toggle" aria-label="Play background music" aria-pressed="false">
+            <div class="sound-wave">
+              <span></span><span></span><span></span><span></span>
+            </div>
+            <span class="music-label">Music</span>
+          </button>
+        </div>
+      </header>
 
-      <section class="countdown-section" aria-labelledby="countdown-heading">
-        <div class="section-shell reveal">
-          <p class="eyebrow">The celebrations begin in</p>
-          <h2 id="countdown-heading">Counting down to <i>forever</i></h2>
-          <div class="countdown" aria-live="polite">
-            <div><strong id="days">000</strong><span>Days</span></div><div><strong id="hours">00</strong><span>Hours</span></div><div><strong id="minutes">00</strong><span>Minutes</span></div><div><strong id="seconds">00</strong><span>Seconds</span></div>
+      <!-- Hero Section -->
+      <section class="hero-section" id="hero">
+        <div class="hero-bg-overlay"></div>
+        <div class="royal-arch-frame">
+          <div class="arch-corner top-left"></div>
+          <div class="arch-corner top-right"></div>
+          
+          <div class="hero-content">
+            <p class="hero-eyebrow">TOGETHER WITH OUR FAMILIES</p>
+            <p class="hero-invitation-line">joyfully invite you to celebrate the wedding of</p>
+            
+            <h1 class="couple-title">
+              <span class="name-g">Vishal</span>
+              <span class="ampersand">&amp;</span>
+              <span class="name-b">Pari</span>
+            </h1>
+            
+            <div class="hero-divider">
+              <span class="line"></span>
+              <span class="symbol">❦</span>
+              <span class="line"></span>
+            </div>
+            
+            <p class="hero-date">SUNDAY · 14 FEBRUARY 2027</p>
+            <p class="hero-location">Jaipur, Rajasthan</p>
+
+            <a href="#welcome" class="scroll-down-btn">
+              <span>Explore Invitation</span>
+              <b class="down-arrow">↓</b>
+            </a>
           </div>
         </div>
       </section>
 
-      <section class="events section-shell" id="events">
-        <p class="eyebrow reveal">Mark your calendar</p>
-        <h2 class="reveal">Come celebrate <i>with us</i></h2>
-        <div class="event-list">
-          <article class="event-card reveal"><div class="event-number">01</div><div><p class="event-type">Friday · 12 February</p><h3>Mehendi</h3><p class="event-time">4:00 PM onwards</p><p class="event-place">The Garden Courtyard<br />Jaipur, Rajasthan</p></div><a href="https://maps.google.com/?q=Jaipur+Rajasthan" target="_blank" rel="noreferrer" aria-label="Get directions to Mehendi">↗</a></article>
-          <article class="event-card feature reveal"><div class="event-number">02</div><div><p class="event-type">Saturday · 13 February</p><h3>Sangeet &amp; Cocktail</h3><p class="event-time">7:00 PM onwards</p><p class="event-place">The Royal Ballroom<br />Jaipur, Rajasthan</p></div><a href="https://maps.google.com/?q=Jaipur+Rajasthan" target="_blank" rel="noreferrer" aria-label="Get directions to Sangeet">↗</a></article>
-          <article class="event-card reveal"><div class="event-number">03</div><div><p class="event-type">Sunday · 14 February</p><h3>The Wedding</h3><p class="event-time">7:30 PM onwards</p><p class="event-place">The Palace Lawns<br />Jaipur, Rajasthan</p></div><a href="https://maps.google.com/?q=Jaipur+Rajasthan" target="_blank" rel="noreferrer" aria-label="Get directions to Wedding">↗</a></article>
-          <article class="event-card reveal"><div class="event-number">04</div><div><p class="event-type">Monday · 15 February</p><h3>Reception</h3><p class="event-time">8:00 PM onwards</p><p class="event-place">The Royal Ballroom<br />Jaipur, Rajasthan</p></div><a href="https://maps.google.com/?q=Jaipur+Rajasthan" target="_blank" rel="noreferrer" aria-label="Get directions to Reception">↗</a></article>
+      <main>
+        <!-- Warm Welcome Message -->
+        <section class="welcome-section section-padding" id="welcome">
+          <div class="container text-center">
+            <p class="section-eyebrow reveal">WITH BLESSINGS OF OUR ELDERS</p>
+            <h2 class="section-title reveal">Two hearts, <i>one grand celebration</i></h2>
+            <p class="welcome-quote reveal">
+              “As two families unite in love and tradition, we request the honor of your presence and blessings as we embark on this sacred journey of togetherness.”
+            </p>
+            <div class="royal-ornament reveal">❦</div>
+          </div>
+        </section>
+
+        <!-- Semi-Circle Parallax Photo Arc Section -->
+        <section class="photo-arc-section section-padding" id="moments">
+          <div class="container text-center">
+            <p class="section-eyebrow reveal">MOMENTS OF TOGETHERNESS</p>
+            <h2 class="section-title reveal">A love that <i>shines bright</i></h2>
+            <p class="section-subtitle reveal">Scroll to watch our moments rotate in celebration.</p>
+            
+            <!-- Semi-Circle Arch Layout -->
+            <div class="semi-circle-viewport reveal" id="semi-circle-viewport">
+              <div class="semi-circle-arch" id="semi-circle-arch">
+                <!-- 6 Semi-Circle Photos -->
+                <figure class="arc-photo photo-1" data-angle="-75" data-depth="0.12" tabindex="0">
+                  <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80" alt="Vishal and Pari celebrating" loading="lazy" />
+                  <span class="photo-label">Joyful Beginnings</span>
+                </figure>
+
+                <figure class="arc-photo photo-2" data-angle="-45" data-depth="0.08" tabindex="0">
+                  <img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=800&q=80" alt="Bride and groom holding hands" loading="lazy" />
+                  <span class="photo-label">Hand in Hand</span>
+                </figure>
+
+                <figure class="arc-photo photo-3" data-angle="-15" data-depth="0.15" tabindex="0">
+                  <img src="https://images.unsplash.com/photo-1507504031003-b417219a0fde?auto=format&fit=crop&w=800&q=80" alt="Jaipur Sunset portrait" loading="lazy" />
+                  <span class="photo-label">Jaipur Sunset</span>
+                </figure>
+
+                <figure class="arc-photo photo-4" data-angle="15" data-depth="0.09" tabindex="0">
+                  <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=800&q=80" alt="Golden traditions" loading="lazy" />
+                  <span class="photo-label">Golden Grace</span>
+                </figure>
+
+                <figure class="arc-photo photo-5" data-angle="45" data-depth="0.14" tabindex="0">
+                  <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=800&q=80" alt="Laughter & Love" loading="lazy" />
+                  <span class="photo-label">Laughter &amp; Love</span>
+                </figure>
+
+                <figure class="arc-photo photo-6" data-angle="75" data-depth="0.10" tabindex="0">
+                  <img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=800&q=80" alt="Dancing together" loading="lazy" />
+                  <span class="photo-label">Sangeet Nights</span>
+                </figure>
+
+                <!-- Center Monogram Crest -->
+                <div class="arc-center-monogram" aria-hidden="true">
+                  <span>V <i>&amp;</i> P</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Lightbox Modal for Photo Arc -->
+        <div class="lightbox-modal" id="lightbox-modal" aria-hidden="true" role="dialog" aria-label="Photo Lightbox">
+          <button class="lightbox-close" id="lightbox-close" aria-label="Close photo view">&times;</button>
+          <button class="lightbox-nav prev" id="lightbox-prev" aria-label="Previous photo">&#10094;</button>
+          <button class="lightbox-nav next" id="lightbox-next" aria-label="Next photo">&#10095;</button>
+          <div class="lightbox-content">
+            <img src="" id="lightbox-img" alt="" />
+            <div class="lightbox-caption" id="lightbox-caption"></div>
+          </div>
         </div>
-        <p class="event-note reveal">Dress in your festive best — jewel tones and joyful hearts encouraged.</p>
-      </section>
 
-      <section class="gallery" aria-label="Moments of Vishal and Pari">
-        <div class="gallery-intro reveal"><p class="eyebrow">Our moments</p><h2>Made of <i>sunshine</i><br />and laughter.</h2></div>
-        <div class="gallery-track reveal">
-          <figure class="photo photo-a"><img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=900&q=80" alt="Couple celebrating outdoors" loading="lazy" /></figure>
-          <figure class="photo photo-b"><img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=900&q=80" alt="Bride and groom holding hands" loading="lazy" /></figure>
-          <figure class="photo photo-c"><img src="https://images.unsplash.com/photo-1507504031003-b417219a0fde?auto=format&fit=crop&w=900&q=80" alt="A joyful wedding couple" loading="lazy" /></figure>
+        <!-- Live Countdown Section -->
+        <section class="countdown-section section-padding">
+          <div class="container text-center">
+            <p class="section-eyebrow reveal">THE CELEBRATION BEGINS IN</p>
+            <h2 class="section-title reveal">Counting down to <i>forever</i></h2>
+            
+            <div class="countdown-grid" id="countdown-grid" aria-live="polite">
+              <div class="countdown-card reveal">
+                <span class="count-number" id="days">000</span>
+                <span class="count-label">DAYS</span>
+              </div>
+              <div class="countdown-card reveal">
+                <span class="count-number" id="hours">00</span>
+                <span class="count-label">HOURS</span>
+              </div>
+              <div class="countdown-card reveal">
+                <span class="count-number" id="minutes">00</span>
+                <span class="count-label">MINUTES</span>
+              </div>
+              <div class="countdown-card reveal">
+                <span class="count-number" id="seconds">00</span>
+                <span class="count-label">SECONDS</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Event Itinerary with Unified Venue Location -->
+        <section class="events-section section-padding" id="events">
+          <div class="container">
+            <div class="text-center">
+              <p class="section-eyebrow reveal">PROGRAM OF EVENTS</p>
+              <h2 class="section-title reveal">Wedding <i>Itinerary</i></h2>
+              
+              <!-- Single Unified Venue Notice -->
+              <div class="unified-venue-box reveal">
+                <span class="venue-pin">📍</span>
+                <div>
+                  <p class="unified-title">PRIMARY VENUE</p>
+                  <h3>The Palace Lawns &amp; Royal Ballroom</h3>
+                  <p class="unified-address">Tonk Road, Jaipur, Rajasthan 302018</p>
+                  <a href="https://maps.google.com/?q=The+Palace+Lawns+Tonk+Road+Jaipur+Rajasthan" target="_blank" rel="noreferrer" class="unified-map-link">Get Directions on Google Maps ↗</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Flowing Event Cards -->
+            <div class="events-timeline">
+              <!-- Event 1: Mehendi -->
+              <article class="event-row reveal">
+                <div class="event-num">01</div>
+                <div class="event-info">
+                  <span class="event-day">FRIDAY · 12 FEBRUARY 2027</span>
+                  <h3 class="event-heading">Mehendi Ceremony</h3>
+                  <p class="event-time">⏰ 4:00 PM Onwards</p>
+                  <span class="dress-badge green">👗 Dress Code: Vibrant Green &amp; Floral</span>
+                </div>
+                <div class="event-action">
+                  <button class="cal-btn" data-event="mehendi">Add to Calendar 📅</button>
+                </div>
+              </article>
+
+              <!-- Event 2: Sangeet -->
+              <article class="event-row reveal">
+                <div class="event-num">02</div>
+                <div class="event-info">
+                  <span class="event-day">SATURDAY · 13 FEBRUARY 2027</span>
+                  <h3 class="event-heading">Sangeet &amp; Cocktail</h3>
+                  <p class="event-time">⏰ 7:00 PM Onwards</p>
+                  <span class="dress-badge gold">👗 Dress Code: Glamorous Indo-Western</span>
+                </div>
+                <div class="event-action">
+                  <button class="cal-btn" data-event="sangeet">Add to Calendar 📅</button>
+                </div>
+              </article>
+
+              <!-- Event 3: Wedding -->
+              <article class="event-row reveal main-event">
+                <div class="event-num main-num">03</div>
+                <div class="event-info">
+                  <span class="event-day">SUNDAY · 14 FEBRUARY 2027</span>
+                  <h3 class="event-heading">The Wedding (Phere)</h3>
+                  <p class="event-time">⏰ Baraat: 6:30 PM | Phere: 7:30 PM</p>
+                  <span class="dress-badge royal">👗 Dress Code: Royal Traditional / Festive</span>
+                </div>
+                <div class="event-action">
+                  <button class="cal-btn" data-event="wedding">Add to Calendar 📅</button>
+                </div>
+              </article>
+
+              <!-- Event 4: Reception -->
+              <article class="event-row reveal">
+                <div class="event-num">04</div>
+                <div class="event-info">
+                  <span class="event-day">MONDAY · 15 FEBRUARY 2027</span>
+                  <h3 class="event-heading">The Reception</h3>
+                  <p class="event-time">⏰ 8:00 PM Onwards</p>
+                  <span class="dress-badge dark">👗 Dress Code: Formal Evening Wear</span>
+                </div>
+                <div class="event-action">
+                  <button class="cal-btn" data-event="reception">Add to Calendar 📅</button>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- Family Support & Contact Section -->
+        <section class="family-section section-padding" id="contacts">
+          <div class="container text-center">
+            <p class="section-eyebrow reveal">FAMILY ASSISTANCE</p>
+            <h2 class="section-title reveal">Here to <i>help you</i></h2>
+            <p class="section-subtitle reveal">For hotel stay details or any travel queries in Jaipur, please reach out to our coordinators.</p>
+
+            <div class="contacts-grid">
+              <div class="contact-card reveal">
+                <span class="contact-side">GROOM'S FAMILY</span>
+                <h3>Sanjay Sharma</h3>
+                <a href="https://wa.me/919876543210?text=Hi%20Sanjay%20Ji,%20I%20have%20a%20query%20regarding%20Vishal%20%26%20Pari%20wedding" target="_blank" class="wa-btn">📱 Chat on WhatsApp (+91 98765 43210)</a>
+              </div>
+
+              <div class="contact-card reveal">
+                <span class="contact-side">BRIDE'S FAMILY</span>
+                <h3>Vikram Verma</h3>
+                <a href="https://wa.me/919876543211?text=Hi%20Vikram,%20I%20have%20a%20query%20regarding%20Vishal%20%26%20Pari%20wedding" target="_blank" class="wa-btn">📱 Chat on WhatsApp (+91 98765 43211)</a>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- Footer Section -->
+      <footer class="footer-section">
+        <div class="container text-center">
+          <div class="footer-monogram">V <span>♡</span> P</div>
+          <p class="footer-thanks">With love &amp; gratitude,</p>
+          <h2 class="footer-names">Vishal <i>&amp;</i> Pari</h2>
+          <p class="footer-date">14 · 02 · 2027</p>
+
+          <div class="footer-share-group">
+            <button class="share-btn wa-share" id="wa-share-btn">
+              <span>Share via WhatsApp</span> 📱
+            </button>
+            <button class="share-btn copy-share" id="copy-link-btn">
+              <span>Copy Link</span> 🔗
+            </button>
+          </div>
+
+          <p class="footer-copyright">Made with ❤️ for Vishal &amp; Pari's Wedding</p>
         </div>
-        <p class="gallery-hint">Swipe to wander <span>→</span></p>
-      </section>
+      </footer>
+    </div>
 
-      <section class="venue section-shell">
-        <div class="venue-card reveal"><div class="venue-art" aria-hidden="true"><span>✦</span><span>✿</span><span>✦</span></div><div class="venue-text"><p class="eyebrow">A royal setting</p><h2>Jaipur, the <i>Pink City</i></h2><p>All wedding festivities are being held in the heart of Jaipur. We cannot wait to welcome you to a weekend of colour, music and love.</p><a class="button" href="https://maps.google.com/?q=Jaipur+Rajasthan" target="_blank" rel="noreferrer">View venue map <b>↗</b></a></div></div>
-      </section>
-
-    </main>
-    <footer><div class="footer-flower" aria-hidden="true">✾</div><p>With love,</p><h2>Vishal <em>&amp;</em> Pari</h2><p class="footer-date">14 · 02 · 2027</p><div class="share"><button id="share-button">Share invitation ↗</button><button id="copy-button">Copy link</button></div></footer>
     <script src="script.js"></script>
   </body>
 </html>
