@@ -1,6 +1,6 @@
 /* ==========================================================================
    VISHAL WEDS PARI — DIGITAL INVITATION LOGIC
-   5-6s Romantic Bollywood Intro, Parallax Semi-Circle Photo Arc, Audio & Events
+   5-6s Romantic Bollywood Tune Intro, Center-Origin Orbital Revolution Math
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -71,25 +71,24 @@ document.addEventListener('DOMContentLoaded', () => {
     noise.start(now);
   }
 
-  // 5-6 SECOND ROMANTIC BOLLYWOOD TUNE INTRO (Raga Yaman / Pahadi Romantic Melody)
-  // Notes: E4, F#4, G#4, B4, C#5, B4, G#4, F#4, E4
+  // 5-6 SECOND ROMANTIC BOLLYWOOD TUNE INTRO (Raga Yaman / Pahadi Acoustic Flute)
   const bollywoodMelody = [
     { freq: 329.63, dur: 0.6, delay: 0.0 },   // E4
     { freq: 369.99, dur: 0.6, delay: 0.65 },  // F#4
     { freq: 415.30, dur: 0.7, delay: 1.3 },   // G#4
-    { freq: 493.88, dur: 0.8, delay: 2.05 },  // B4 (Soaring)
-    { freq: 554.37, dur: 0.9, delay: 2.9 },   // C#5 (Peak emotion)
+    { freq: 493.88, dur: 0.8, delay: 2.05 },  // B4
+    { freq: 554.37, dur: 0.9, delay: 2.9 },   // C#5 (Romantic peak)
     { freq: 493.88, dur: 0.6, delay: 3.85 },  // B4
     { freq: 415.30, dur: 0.6, delay: 4.5 },   // G#4
     { freq: 369.99, dur: 0.6, delay: 5.1 },   // F#4
-    { freq: 329.63, dur: 1.0, delay: 5.7 }    // E4 (Resolve)
+    { freq: 329.63, dur: 1.0, delay: 5.7 }    // E4
   ];
 
   function playBollywoodIntro() {
     const ctx = initAudio();
     const now = ctx.currentTime;
 
-    // Background Warm Chord Pad
+    // Warm Background Pad
     [164.81, 246.94, 329.63].forEach((f) => {
       const osc = ctx.createOscillator();
       const g = ctx.createGain();
@@ -104,16 +103,14 @@ document.addEventListener('DOMContentLoaded', () => {
       osc.stop(now + 6.3);
     });
 
-    // Flute / Sitar Style Lead Melody
+    // Lead Romantic Flute Notes
     bollywoodMelody.forEach((item) => {
       const startTime = now + item.delay;
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
 
-      osc.type = 'sine'; // Flute/Sitar harmonic
+      osc.type = 'sine';
       osc.frequency.setValueAtTime(item.freq, startTime);
-      
-      // Meend (glide effect)
       osc.frequency.exponentialRampToValueAtTime(item.freq * 1.01, startTime + item.dur);
 
       gain.gain.setValueAtTime(0.001, startTime);
@@ -127,13 +124,12 @@ document.addEventListener('DOMContentLoaded', () => {
       osc.stop(startTime + item.dur + 0.05);
     });
 
-    // Schedule ambient background loop after 6.2 seconds
     musicTimer = setTimeout(() => {
       if (musicPlaying) playAmbientLoop();
     }, 6200);
   }
 
-  // Soft Background Ambient Loop
+  // Soft Ambient Loop
   const ambientNotes = [261.63, 329.63, 392.00, 440.00, 523.25];
   function playAmbientLoop() {
     if (!musicPlaying) return;
@@ -203,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setTimeout(() => {
       entryScreen.classList.add('opened');
-      toggleMusic(true); // Plays 5-6s Bollywood romantic intro
+      toggleMusic(true);
     }, 1300);
   }
 
@@ -217,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     waxSealContainer.addEventListener('touchend', (e) => {
       const endY = e.changedTouches[0].clientY;
-      if (startY - endY > 25 || Math.abs(startY - endY) < 10) {
+      if (startY - endY > 20 || Math.abs(startY - endY) < 10) {
         openInvitation();
       }
     });
@@ -231,44 +227,63 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
-  // 4. PARALLAX SEMI-CIRCLE PHOTO ARC ENGINE
+  // 4. CENTER-ORIGIN ORBITAL SEMI-CIRCLE REVOLUTION
   const arcPhotos = document.querySelectorAll('.arc-photo');
   const arcViewport = document.getElementById('semi-circle-viewport');
 
-  function updateArcParallax() {
+  function updateOrbitalRevolution() {
     if (!arcViewport) return;
     const rect = arcViewport.getBoundingClientRect();
     const windowHeight = window.innerHeight;
     
-    // Progress of viewport through screen (0 to 1)
-    const progress = (windowHeight - rect.top) / (windowHeight + rect.height);
-    const scrollFactor = Math.max(-0.5, Math.min(0.5, progress - 0.5));
+    // Relative scroll position of viewport center
+    const viewportCenter = rect.top + rect.height / 2;
+    const screenCenter = windowHeight / 2;
+    const scrollFactor = Math.max(-0.8, Math.min(0.8, (screenCenter - viewportCenter) / (windowHeight / 2)));
+
+    // Dynamic radius based on screen width (keeps photos fully inside screen bounds on mobile!)
+    const screenWidth = window.innerWidth;
+    const radius = Math.min(screenWidth * 0.35, 190);
 
     arcPhotos.forEach((photo) => {
       const baseAngle = parseFloat(photo.getAttribute('data-angle')) || 0;
-      const depth = parseFloat(photo.getAttribute('data-depth')) || 0.1;
+      
+      // Orbiting angle shifts relative to center origin on scroll
+      const currentAngle = baseAngle + scrollFactor * 40;
+      const rad = (currentAngle * Math.PI) / 180;
 
-      // Calculate dynamic angle and Y offset on scroll
-      const currentAngle = baseAngle + scrollFactor * 25 * (baseAngle / 45 || 1);
-      const translateY = Math.abs(currentAngle) * 1.8 + scrollFactor * depth * 120;
-      const scale = 1 + (0.15 - Math.abs(currentAngle) * 0.002);
+      // Parametric semi-circle circle formula centered at (0,0)
+      const x = radius * Math.sin(rad);
+      const y = -radius * Math.cos(rad);
+
+      // Self-tangential rotation
+      const selfRotate = currentAngle * 0.35;
 
       photo.style.transform = `
-        translateX(-50%) 
-        rotate(${currentAngle}deg) 
-        translateY(-${160 + translateY}px) 
-        rotate(${-currentAngle}deg) 
-        scale(${Math.max(0.85, scale)})
+        translate3d(calc(-50% + ${x}px), calc(-50% + ${y}px), 0) 
+        rotate(${selfRotate}deg) 
+        scale(${Math.max(0.82, 1 - Math.abs(currentAngle) * 0.0018)})
       `;
     });
   }
 
-  window.addEventListener('scroll', updateArcParallax, { passive: true });
-  window.addEventListener('resize', updateArcParallax);
-  updateArcParallax();
+  let ticking = false;
+  function onScroll() {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        updateOrbitalRevolution();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', updateOrbitalRevolution);
+  updateOrbitalRevolution();
 
 
-  // 5. CANVAS AMBIENT PETALS & DUST
+  // 5. CANVAS AMBIENT PARTICLES
   const canvas = document.getElementById('ambient-canvas');
   if (canvas) {
     const ctx = canvas.getContext('2d');
@@ -280,11 +295,11 @@ document.addEventListener('DOMContentLoaded', () => {
       height = canvas.height = window.innerHeight;
     });
 
-    const particles = Array.from({ length: 30 }, () => ({
+    const particles = Array.from({ length: 28 }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
-      size: Math.random() * 5 + 2,
-      speedY: Math.random() * 0.7 + 0.3,
+      size: Math.random() * 4.5 + 2,
+      speedY: Math.random() * 0.6 + 0.3,
       opacity: Math.random() * 0.6 + 0.2,
       color: Math.random() > 0.4 ? '#D4AF37' : '#F4D0D8'
     }));
