@@ -18,13 +18,13 @@ function playPhrase() { if (!musicOn) return; const start = audioContext.current
 function setMusic(shouldPlay) { if (!audioContext) { audioContext = new (window.AudioContext || window.webkitAudioContext)(); masterGain = audioContext.createGain(); masterGain.gain.value = .8; masterGain.connect(audioContext.destination); } musicOn = shouldPlay; const toggle = document.getElementById('music-toggle'); toggle.classList.toggle('playing', musicOn); toggle.setAttribute('aria-pressed', String(musicOn)); toggle.setAttribute('aria-label', musicOn ? 'Pause background music' : 'Play background music'); if (musicOn) { audioContext.resume(); playPhrase(); } else clearTimeout(musicTimer); }
 const paperSeal = document.getElementById('open-invitation');
 let sealStartY = 0, sealOpened = false;
-function openIntro() { if (sealOpened) return; sealOpened = true; paperSeal.classList.add('seal-breaking'); setTimeout(() => { document.body.classList.add('invitation-open'); setMusic(true); }, 360); }
+function openIntro() { if (sealOpened) return; sealOpened = true; paperSeal.classList.add('seal-torn'); setTimeout(() => { document.body.classList.add('invitation-open'); setMusic(true); }, 520); }
 paperSeal.addEventListener('pointerdown', event => { sealStartY = event.clientY; paperSeal.setPointerCapture(event.pointerId); });
-paperSeal.addEventListener('pointermove', event => { if (!sealStartY || sealOpened) return; const lift = Math.min(92, Math.max(0, sealStartY - event.clientY)); paperSeal.style.transform = `translateY(${-lift}px) rotate(${lift / 11}deg)`; paperSeal.classList.toggle('ready-to-break', lift > 45); });
-paperSeal.addEventListener('pointerup', event => { if (sealStartY - event.clientY > 45) openIntro(); else paperSeal.style.transform = ''; sealStartY = 0; });
+paperSeal.addEventListener('pointermove', event => { if (!sealStartY || sealOpened) return; const lift = Math.min(92, Math.max(0, sealStartY - event.clientY)); paperSeal.style.setProperty('--tear-progress', lift / 92); paperSeal.classList.toggle('ready-to-break', lift > 45); });
+paperSeal.addEventListener('pointerup', event => { if (sealStartY - event.clientY > 45) openIntro(); else paperSeal.style.removeProperty('--tear-progress'); sealStartY = 0; });
 paperSeal.addEventListener('keydown', event => { if (event.key === 'ArrowUp' || event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openIntro(); } });
 document.getElementById('music-toggle').addEventListener('click', () => setMusic(!musicOn));
-document.getElementById('envelope-open').addEventListener('click', event => { event.preventDefault(); const hero = document.getElementById('home'); hero.classList.add('envelope-open'); setTimeout(() => document.getElementById('story').scrollIntoView({ behavior: 'smooth' }), 760); });
+document.getElementById('envelope-open').addEventListener('click', () => { const hero = document.getElementById('home'); hero.classList.add('envelope-open'); setTimeout(() => document.getElementById('story').scrollIntoView({ behavior: 'smooth' }), 1050); });
 
 const observer = new IntersectionObserver(entries => entries.forEach(entry => {
   if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); }
