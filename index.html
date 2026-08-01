@@ -63,17 +63,16 @@
    RESET
    ============================================================ */
 *,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
-html{ scroll-behavior:smooth; }
+html{ scroll-behavior:smooth; overflow-y:hidden; }
+html.unlocked{ overflow-y:auto; }
 body{
   font-family:var(--font-body);
   background:var(--ivory);
   color:var(--text-dark);
   width:100%;
   overflow-x:hidden;
-  overflow-y:hidden;
   -webkit-font-smoothing:antialiased;
 }
-body.unlocked{ overflow-y:auto; }
 img{ max-width:100%; display:block; }
 button{ font-family:inherit; cursor:pointer; border:none; background:none; -webkit-tap-highlight-color:transparent; }
 a{ color:inherit; text-decoration:none; }
@@ -100,12 +99,15 @@ body.webgl-ready #entry-screen{
 }
 body.webgl-ready #hero{
   background:
-    radial-gradient(ellipse 100% 55% at 50% 0%, rgba(78,17,32,.35) 0%, transparent 55%),
-    linear-gradient(180deg, rgba(11,21,34,.25) 0%, rgba(15,27,46,.35) 55%, var(--ivory) 100%);
+    radial-gradient(ellipse 100% 55% at 50% 0%, rgba(78,17,32,.45) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(11,21,34,.4) 0%, rgba(15,27,46,.5) 55%, var(--ivory) 100%);
 }
 body.webgl-ready .entry-particles, body.webgl-ready .hero-particles{ display:none; }
 body.webgl-ready #footer{
   background:linear-gradient(165deg, rgba(42,8,16,.78) 0%, rgba(11,21,34,.82) 100%);
+}
+body.webgl-ready #gallery{
+  background:radial-gradient(ellipse 100% 70% at 50% 0%, rgba(22,40,63,.55) 0%, rgba(11,21,34,.68) 70%);
 }
 /* in webgl mode the canvas draws the envelope back/flap/seal — keep this DOM structure only
    as the click target + sliding name-card text, hide its own painted surfaces */
@@ -762,7 +764,7 @@ function makeParticles(container, count){
 const isMobileViewport = window.innerWidth < 760;
 let webglReady = false;
 let scene3d, camera3d, renderer3d, canvas3d;
-let envelopeGroup, flapHinge, sealMesh, ringsGroup, particlesPoints;
+let envelopeGroup, flapHinge, sealMesh, ringsGroup, particlesPoints, photoRingGroup;
 let entryOpened3d = false;
 let openSequenceRunning = false;
 let clock3d = 0;
@@ -788,7 +790,7 @@ function animate3d(duration, easing, onUpdate){
   requestAnimationFrame(frame);
 }
 
-function makeMonogramTexture(){
+function makeSealTexture(){
   const cvs = document.createElement('canvas');
   cvs.width = 256; cvs.height = 256;
   const ctx = cvs.getContext('2d');
@@ -798,15 +800,35 @@ function makeMonogramTexture(){
   grad.addColorStop(1,'#8A6A26');
   ctx.fillStyle = grad;
   ctx.beginPath(); ctx.arc(128,128,122,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle = 'rgba(61,12,24,0.92)';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.font = '700 82px "Playfair Display", serif';
-  ctx.fillText('V', 92, 136);
-  ctx.font = 'italic 500 44px "Cormorant Garamond", serif';
-  ctx.fillText('&', 128, 132);
-  ctx.font = '700 82px "Playfair Display", serif';
-  ctx.fillText('P', 164, 136);
+
+  ctx.strokeStyle = 'rgba(61,12,24,0.35)';
+  ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.arc(128,128,96,0,Math.PI*2); ctx.stroke();
+
+  ctx.save();
+  ctx.translate(128,128);
+  ctx.strokeStyle = 'rgba(61,12,24,0.5)';
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+  for (let i=0;i<8;i++){
+    ctx.rotate(Math.PI/4);
+    ctx.beginPath();
+    ctx.moveTo(0,-20);
+    ctx.lineTo(0,-62);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  ctx.beginPath();
+  ctx.fillStyle = 'rgba(61,12,24,0.55)';
+  ctx.arc(128,128,11,0,Math.PI*2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.strokeStyle = 'rgba(255,240,210,0.6)';
+  ctx.lineWidth = 1.5;
+  ctx.arc(128,128,11,0,Math.PI*2);
+  ctx.stroke();
+
   const tex = new THREE.CanvasTexture(cvs);
   tex.needsUpdate = true;
   return tex;
@@ -838,7 +860,7 @@ function buildEnvelopeGroup(){
   group.add(flapHinge);
 
   const sealGeo = new THREE.CircleGeometry(0.34, 48);
-  const sealMat = new THREE.MeshBasicMaterial({ map: makeMonogramTexture(), transparent:true });
+  const sealMat = new THREE.MeshBasicMaterial({ map: makeSealTexture(), transparent:true });
   sealMesh = new THREE.Mesh(sealGeo, sealMat);
   sealMesh.position.set(0, -0.1, 0.08);
   group.add(sealMesh);
@@ -877,6 +899,52 @@ function buildRingsAndParticles(){
   return group;
 }
 
+function makePhotoFallbackTexture(){
+  const cvs = document.createElement('canvas');
+  cvs.width = 200; cvs.height = 256;
+  const ctx = cvs.getContext('2d');
+  const grad = ctx.createLinearGradient(0,0,0,256);
+  grad.addColorStop(0,'#6B1526');
+  grad.addColorStop(1,'#16283F');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,200,256);
+  ctx.strokeStyle = 'rgba(201,162,77,0.6)';
+  ctx.lineWidth = 6;
+  ctx.strokeRect(3,3,194,250);
+  const tex = new THREE.CanvasTexture(cvs);
+  tex.needsUpdate = true;
+  return tex;
+}
+
+function buildPhotoRingGroup(){
+  const group = new THREE.Group();
+  const photos = (WEDDING_DATA.gallery || []).slice(0, 6);
+  if (!photos.length) return group;
+  const n = photos.length;
+  const radius = 2.1;
+  const fallbackTex = makePhotoFallbackTexture();
+  const loader = new THREE.TextureLoader();
+
+  photos.forEach((photo, i) => {
+    const angle = (i / n) * Math.PI * 2;
+    const geo = new THREE.PlaneGeometry(1.15, 1.45);
+    const mat = new THREE.MeshBasicMaterial({ map:fallbackTex, transparent:true, opacity:0, side:THREE.DoubleSide });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set(Math.sin(angle)*radius, 0, Math.cos(angle)*radius);
+    mesh.rotation.y = angle;
+    group.add(mesh);
+
+    loader.load(
+      photo.src,
+      (tex) => { mat.map = tex; mat.needsUpdate = true; },
+      undefined,
+      () => { /* image not added yet — keep the themed fallback card */ }
+    );
+  });
+
+  return group;
+}
+
 function initWebGLScene(){
   canvas3d = document.getElementById('webgl-bg');
   if (!canvas3d || typeof THREE === 'undefined' || !detectWebGL() || reduceMotion) return;
@@ -886,7 +954,8 @@ function initWebGLScene(){
     camera3d = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 100);
     camera3d.position.set(0, 0, 4.6);
 
-    renderer3d = new THREE.WebGLRenderer({ canvas:canvas3d, alpha:true, antialias:!isMobileViewport, powerPreference:'high-performance' });
+    renderer3d = new THREE.WebGLRenderer({ canvas:canvas3d, alpha:false, antialias:!isMobileViewport, powerPreference:'high-performance' });
+    renderer3d.setClearColor(0x0d1524, 1);
     document.body.classList.add('webgl-ready');
     renderer3d.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobileViewport ? 1.5 : 2));
     renderer3d.setSize(window.innerWidth, window.innerHeight);
@@ -903,6 +972,9 @@ function initWebGLScene(){
     scene3d.add(envelopeGroup);
     ringsGroup = buildRingsAndParticles();
     scene3d.add(ringsGroup);
+    photoRingGroup = buildPhotoRingGroup();
+    photoRingGroup.position.set(0, 0, -5);
+    scene3d.add(photoRingGroup);
 
     canvas3d.addEventListener('webglcontextlost', (e) => {
       e.preventDefault();
@@ -926,12 +998,11 @@ function onResize3d(){
   renderer3d.setSize(window.innerWidth, window.innerHeight);
 }
 
-function computeCanvasOpacity3d(){
-  const scrollY = window.scrollY || window.pageYOffset;
-  const vh = window.innerHeight;
+function computeCanvasOpacity3d(scrollY, vh, galProminence){
   const heroEnd = vh * 1.15;
   const fadeRange = vh * 0.7;
   let opacity = scrollY <= heroEnd ? 1 : Math.max(0, 1 - (scrollY - heroEnd) / fadeRange);
+  opacity = Math.max(opacity, galProminence);
 
   const docH = document.documentElement.scrollHeight;
   const distFromBottom = docH - (scrollY + vh);
@@ -943,25 +1014,42 @@ function computeCanvasOpacity3d(){
 }
 
 function startRenderLoop(){
+  const gallerySection = document.getElementById('gallery');
+
   function loop(){
     requestAnimationFrame(loop);
     if (document.hidden) return;
     clock3d += 0.01;
 
-    const opacity = computeCanvasOpacity3d();
+    const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+
+    let galProminence = 0;
+    if (gallerySection){
+      const galRect = gallerySection.getBoundingClientRect();
+      const galProgress = (vh - galRect.top) / (vh + galRect.height) * 2 - 1;
+      galProminence = Math.max(0, 1 - Math.abs(galProgress) * 1.3);
+    }
+
+    const opacity = computeCanvasOpacity3d(scrollY, vh, galProminence);
     canvas3d.style.opacity = opacity.toFixed(2);
     if (opacity < 0.03 && entryOpened3d) return;
 
     ringsGroup.rotation.y = clock3d * 0.12;
     particlesPoints.rotation.y = clock3d * 0.05;
 
+    if (photoRingGroup){
+      photoRingGroup.rotation.y = clock3d * 0.16;
+      photoRingGroup.children.forEach((mesh) => { mesh.material.opacity = galProminence * 0.95; });
+    }
+
     if (!entryOpened3d){
       envelopeGroup.rotation.y = Math.sin(clock3d*0.4) * 0.04;
     } else if (!openSequenceRunning){
-      const scrollY = window.scrollY || window.pageYOffset;
-      const t = Math.min(1, scrollY / (window.innerHeight * 2));
+      const t = Math.min(1, scrollY / (vh * 2));
       camera3d.position.y = lerp3d(0.4, 0.7, t);
       camera3d.rotation.z = lerp3d(0, 0.015, t);
+      camera3d.position.z = lerp3d(7.2, 3.4, galProminence);
     }
 
     renderer3d.render(scene3d, camera3d);
@@ -1114,6 +1202,9 @@ function initGalleryParallax(){
   window.addEventListener('scroll', () => {
     if (!ticking){ ticking = true; requestAnimationFrame(update); }
   }, { passive:true });
+  document.addEventListener('scroll', () => {
+    if (!ticking){ ticking = true; requestAnimationFrame(update); }
+  }, { passive:true, capture:true });
   update();
 }
 
@@ -1292,7 +1383,7 @@ function initEntry(){
       entryScreen.classList.add('fade-out');
       setTimeout(()=>{
         entryScreen.classList.add('gone');
-        document.body.classList.add('unlocked');
+        document.documentElement.classList.add('unlocked');
         mainSite.classList.add('visible');
       }, 300);
       return;
@@ -1307,7 +1398,7 @@ function initEntry(){
         entryScreen.classList.add('fade-out');
         setTimeout(()=>{
           entryScreen.classList.add('gone');
-          document.body.classList.add('unlocked');
+          document.documentElement.classList.add('unlocked');
           mainSite.classList.add('visible');
         }, 1000);
       }, 1450);
@@ -1316,7 +1407,7 @@ function initEntry(){
         entryScreen.classList.add('fade-out');
         setTimeout(()=>{
           entryScreen.classList.add('gone');
-          document.body.classList.add('unlocked');
+          document.documentElement.classList.add('unlocked');
           mainSite.classList.add('visible');
         }, 900);
       }, 850);
