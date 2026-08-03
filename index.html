@@ -234,7 +234,11 @@ body.webgl-ready .envelope-card{ background:transparent; box-shadow:none; }
   padding:var(--space-xl) var(--space-sm);
   overflow:hidden;
 }
-.section.light{ background:radial-gradient(ellipse 120% 60% at 50% 0%, #ffffff 0%, var(--ivory) 65%); }
+.section.light{
+  background:
+    linear-gradient(180deg, rgba(15,27,46,.1) 0%, transparent 14%),
+    radial-gradient(ellipse 120% 60% at 50% 0%, var(--cream) 0%, var(--ivory) 65%);
+}
 .section.dark{
   background:radial-gradient(ellipse 100% 70% at 50% 0%, var(--navy-700) 0%, var(--navy-900) 70%);
   color:var(--text-on-dark, var(--cream));
@@ -395,6 +399,8 @@ body.webgl-ready .envelope-card{ background:transparent; box-shadow:none; }
   transition:transform .4s var(--ease-soft), box-shadow .4s ease;
 }
 .event-card:hover{ transform:translateY(-6px); box-shadow:0 22px 44px rgba(78,17,32,.16); }
+.event-card.card-pressed{ box-shadow:0 6px 16px rgba(78,17,32,.22); filter:brightness(1.04); }
+#countdown.card-pressed{ filter:brightness(1.1); }
 .event-num{ font-family:var(--font-display); font-size:.75rem; letter-spacing:.2em; color:var(--gold-dim); }
 .event-name{ font-family:var(--font-display); font-weight:700; font-size:1.5rem; color:var(--maroon-700); margin:.35rem 0 .6rem; }
 .event-meta{ font-size:.85rem; color:var(--text-dim); line-height:1.7; }
@@ -411,40 +417,23 @@ body.webgl-ready .envelope-card{ background:transparent; box-shadow:none; }
 .event-btn:hover{ opacity:.65; }
 
 /* ============================================================
-   GALLERY — parallax columns (replaces the old static grid)
+   GALLERY — now purely the 3D photo ring (see WebGL section below);
+   this just reserves scroll space for the ring to be the foreground
    ============================================================ */
-.parallax-viewport{ overflow:hidden; max-width:1040px; margin:0 auto; padding:4px 2px; }
-.parallax-gallery{ display:flex; gap:var(--space-xs); }
-.parallax-col{ flex:1; min-width:0; display:flex; flex-direction:column; gap:var(--space-xs); will-change:transform; }
-.parallax-col:nth-child(2){ margin-top:clamp(40px,10vw,84px); }
-.parallax-col:nth-child(3){ margin-top:clamp(-40px,-6vw,-20px); }
-@media (min-width:640px){ .parallax-gallery{ gap:var(--space-sm); } .parallax-col{ gap:var(--space-sm); } }
-.parallax-item{
-  position:relative; aspect-ratio:3/4; overflow:hidden; border-radius:2px;
-  border:1px solid var(--gold-soft);
-  background:linear-gradient(165deg, var(--navy-600), var(--navy-800));
-  cursor:pointer;
-  transform:translateZ(0);
+.gallery-stage{
+  height:min(78vh, 620px);
+  display:flex; align-items:flex-end; justify-content:center;
+  padding-bottom:var(--space-md);
+  touch-action:pan-y;
 }
-.parallax-item img{ width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity .6s ease, transform .5s ease; }
-.parallax-item img.loaded{ opacity:1; }
-.parallax-item:hover img.loaded{ transform:scale(1.08); }
-.parallax-placeholder{
-  position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
-  color:var(--gold-light);
+.gallery-hint{
+  font-family:var(--font-body); font-size:.68rem; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--gold-light); opacity:.7;
+  display:flex; align-items:center; gap:8px;
+  transition:opacity .4s ease;
 }
-.parallax-placeholder svg{ width:24px; height:24px; opacity:.7; }
-.parallax-placeholder span{ font-size:.6rem; letter-spacing:.15em; text-transform:uppercase; opacity:.65; text-align:center; padding:0 8px; }
-
-#lightbox{
-  position:fixed; inset:0; z-index:900; display:none; align-items:center; justify-content:center;
-  background:rgba(11,21,34,.92); padding:var(--space-sm);
-}
-#lightbox.active{ display:flex; }
-#lightbox img{ max-width:min(92vw,780px); max-height:82vh; border-radius:3px; box-shadow:0 20px 60px rgba(0,0,0,.5); }
-#lightbox-close{
-  position:absolute; top:20px; right:24px; color:var(--gold-light); font-size:2rem; line-height:1;
-}
+.gallery-hint svg{ width:16px; height:16px; animation:hintSwipe 1.8s ease-in-out infinite; }
+@keyframes hintSwipe{ 0%,100%{ transform:translateX(-4px); opacity:.5; } 50%{ transform:translateX(4px); opacity:1; } }
 
 /* ============================================================
    VENUE
@@ -615,8 +604,8 @@ body.webgl-ready .envelope-card{ background:transparent; box-shadow:none; }
       <span class="section-kicker on-dark reveal">A Few Favorites</span>
       <h2 class="section-title on-dark reveal">Moments</h2>
       <div class="ornament-divider reveal"><span class="line"></span><span class="dot"></span><span class="line right"></span></div>
-      <div class="parallax-viewport">
-        <div class="parallax-gallery" id="gallery-grid"></div>
+      <div class="gallery-stage" id="gallery-grid">
+        <span class="gallery-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12h16M4 12l4-4M4 12l4 4M20 12l-4-4M20 12l-4 4"/></svg>Drag to spin</span>
       </div>
     </div>
   </section>
@@ -661,12 +650,6 @@ body.webgl-ready .envelope-card{ background:transparent; box-shadow:none; }
   <span class="bar"><i></i><i></i><i></i></span>
 </button>
 <audio id="bg-audio" loop preload="none"></audio>
-
-<!-- LIGHTBOX -->
-<div id="lightbox" role="dialog" aria-label="Photo viewer">
-  <button id="lightbox-close" aria-label="Close">&times;</button>
-  <img id="lightbox-img" src="" alt="" />
-</div>
 
 <noscript><div style="padding:3rem;text-align:center;font-family:sans-serif;">Please enable JavaScript to view this invitation.</div></noscript>
 
@@ -768,6 +751,9 @@ let envelopeGroup, flapHinge, sealMesh, ringsGroup, particlesPoints, photoRingGr
 let entryOpened3d = false;
 let openSequenceRunning = false;
 let clock3d = 0;
+let ringRotation = 0;
+let ringUserOffset = 0;
+let lastRingInteraction = 0;
 
 function detectWebGL(){
   try{
@@ -918,20 +904,21 @@ function makePhotoFallbackTexture(){
 
 function buildPhotoRingGroup(){
   const group = new THREE.Group();
-  const photos = (WEDDING_DATA.gallery || []).slice(0, 6);
+  const photos = (WEDDING_DATA.gallery || []).slice(0, 10);
   if (!photos.length) return group;
   const n = photos.length;
-  const radius = 2.1;
+  const radius = 2.4;
   const fallbackTex = makePhotoFallbackTexture();
   const loader = new THREE.TextureLoader();
 
   photos.forEach((photo, i) => {
     const angle = (i / n) * Math.PI * 2;
-    const geo = new THREE.PlaneGeometry(1.15, 1.45);
+    const geo = new THREE.PlaneGeometry(1.3, 1.65);
     const mat = new THREE.MeshBasicMaterial({ map:fallbackTex, transparent:true, opacity:0, side:THREE.DoubleSide });
     const mesh = new THREE.Mesh(geo, mat);
     mesh.position.set(Math.sin(angle)*radius, 0, Math.cos(angle)*radius);
     mesh.rotation.y = angle;
+    mesh.userData.floatSeed = i * 1.1;
     group.add(mesh);
 
     loader.load(
@@ -1028,7 +1015,7 @@ function startRenderLoop(){
     if (gallerySection){
       const galRect = gallerySection.getBoundingClientRect();
       const galProgress = (vh - galRect.top) / (vh + galRect.height) * 2 - 1;
-      galProminence = Math.max(0, 1 - Math.abs(galProgress) * 1.3);
+      galProminence = Math.max(0, 1 - Math.abs(galProgress) * 1.1);
     }
 
     const opacity = computeCanvasOpacity3d(scrollY, vh, galProminence);
@@ -1039,8 +1026,15 @@ function startRenderLoop(){
     particlesPoints.rotation.y = clock3d * 0.05;
 
     if (photoRingGroup){
-      photoRingGroup.rotation.y = clock3d * 0.16;
-      photoRingGroup.children.forEach((mesh) => { mesh.material.opacity = galProminence * 0.95; });
+      const ringIdle = (Date.now() - lastRingInteraction) > 2200;
+      if (ringIdle) ringRotation += 0.0022;
+      photoRingGroup.rotation.y = ringRotation + ringUserOffset;
+      const ringOpacity = Math.min(1, galProminence * 1.15);
+      photoRingGroup.children.forEach((mesh) => {
+        mesh.material.opacity = ringOpacity;
+        mesh.scale.setScalar(0.85 + galProminence * 0.15);
+        mesh.position.y = Math.sin(clock3d * 0.6 + (mesh.userData.floatSeed || 0)) * 0.12;
+      });
     }
 
     if (!entryOpened3d){
@@ -1049,7 +1043,7 @@ function startRenderLoop(){
       const t = Math.min(1, scrollY / (vh * 2));
       camera3d.position.y = lerp3d(0.4, 0.7, t);
       camera3d.rotation.z = lerp3d(0, 0.015, t);
-      camera3d.position.z = lerp3d(7.2, 3.4, galProminence);
+      camera3d.position.z = lerp3d(7.2, 2.8, galProminence);
     }
 
     renderer3d.render(scene3d, camera3d);
@@ -1089,13 +1083,52 @@ function play3DOpenSequence(){
 }
 
 /* ============================================================
-   3D TILT — cheap pointer-driven depth for cards, hover-capable pointers only
-   (touch devices get their 3D from the scene + parallax gallery instead)
+   SOUND EFFECTS — synthesized with the Web Audio API, no external
+   files needed. Every call happens inside a real tap/click, so
+   browser autoplay rules are satisfied automatically. Skipped
+   quietly on browsers without Web Audio support.
+   ============================================================ */
+let audioCtx3d;
+function getAudioCtx(){
+  if (!window.AudioContext && !window.webkitAudioContext) return null;
+  if (!audioCtx3d){
+    try{ audioCtx3d = new (window.AudioContext || window.webkitAudioContext)(); }
+    catch(e){ return null; }
+  }
+  if (audioCtx3d.state === 'suspended') audioCtx3d.resume();
+  return audioCtx3d;
+}
+function playChime(freqs, duration, volume, type){
+  const ctx = getAudioCtx();
+  if (!ctx) return;
+  freqs.forEach((freq, i) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type || 'sine';
+    osc.frequency.value = freq;
+    const start = ctx.currentTime + i * 0.09;
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.linearRampToValueAtTime(volume, start + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, start + duration);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(start);
+    osc.stop(start + duration + 0.05);
+  });
+}
+function playSealChime(){ playChime([523.25, 659.25, 783.99], 0.9, 0.1); }
+function playSoftTick(){ playChime([880], 0.1, 0.045); }
+function playRingWhoosh(){ playChime([260], 0.3, 0.05, 'triangle'); }
+
+/* ============================================================
+   3D TILT — pointer-driven depth on cards, hover-capable pointers only
+   (mouse/trackpad). Touch devices use the scroll-tilt + press
+   feedback below instead, since hover means nothing on a phone.
    ============================================================ */
 function initTilt(){
   const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   if (!canHover || reduceMotion) return;
-  document.querySelectorAll('.event-card, #countdown, .parallax-item').forEach((el) => {
+  document.querySelectorAll('.event-card, #countdown').forEach((el) => {
     el.style.transition = 'transform .15s ease-out, box-shadow .3s ease';
     el.addEventListener('pointermove', (e) => {
       const r = el.getBoundingClientRect();
@@ -1105,6 +1138,94 @@ function initTilt(){
     });
     el.addEventListener('pointerleave', () => { el.style.transform = ''; });
   });
+}
+
+/* ============================================================
+   PHONE-FIRST CARD MOTION — no hover exists on touch, so cards
+   tilt based on scroll position instead: leaning in as they
+   approach the center of the screen, leaning away as they leave.
+   ============================================================ */
+function initCardScrollTilt(){
+  const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (canHover || reduceMotion) return;
+  const cards = document.querySelectorAll('.event-card');
+  if (!cards.length) return;
+  let ticking = false;
+
+  function update(){
+    ticking = false;
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+    cards.forEach((card) => {
+      const r = card.getBoundingClientRect();
+      const center = r.top + r.height / 2;
+      const t = Math.max(-1, Math.min(1, (center - vh / 2) / (vh / 2)));
+      card.style.transform = 'perspective(800px) rotateX(' + (t * 9).toFixed(2) + 'deg) scale(' + (1 - Math.abs(t) * 0.025).toFixed(3) + ')';
+    });
+  }
+  window.addEventListener('scroll', () => { if (!ticking){ ticking = true; requestAnimationFrame(update); } }, { passive:true });
+  update();
+}
+
+/* ============================================================
+   PHONE-FIRST TOUCH FEEDBACK — a quick tactile glow + soft tick
+   sound on press, on every device (harmless alongside the tilt).
+   ============================================================ */
+function initCardTouchFeedback(){
+  document.querySelectorAll('.event-card, #countdown').forEach((el) => {
+    el.addEventListener('touchstart', () => {
+      el.classList.add('card-pressed');
+      playSoftTick();
+    }, { passive:true });
+    el.addEventListener('touchend', () => { el.classList.remove('card-pressed'); }, { passive:true });
+    el.addEventListener('touchcancel', () => { el.classList.remove('card-pressed'); }, { passive:true });
+  });
+}
+
+/* ============================================================
+   PHOTO RING DRAG — swipe left/right anywhere on the gallery
+   stage to spin the ring by hand. Vertical gestures are left
+   alone so the page keeps scrolling normally; only a clearly
+   horizontal drag takes over and rotates the photos.
+   ============================================================ */
+function initGalleryDrag(){
+  const stage = document.getElementById('gallery-grid');
+  if (!stage) return;
+  const hint = stage.querySelector('.gallery-hint');
+  let dragging = false;
+  let axisLocked = null;
+  let startX = 0, startY = 0, lastX = 0;
+
+  stage.addEventListener('pointerdown', (e) => {
+    dragging = true;
+    axisLocked = null;
+    startX = lastX = e.clientX;
+    startY = e.clientY;
+  });
+
+  stage.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    const x = e.clientX, y = e.clientY;
+    if (!axisLocked){
+      if (Math.abs(x-startX) > 8 || Math.abs(y-startY) > 8){
+        axisLocked = Math.abs(x-startX) > Math.abs(y-startY) ? 'x' : 'y';
+      }
+    }
+    if (axisLocked === 'x'){
+      if (e.cancelable) e.preventDefault();
+      ringUserOffset += (x - lastX) * 0.012;
+      lastRingInteraction = Date.now();
+      if (hint) hint.style.opacity = '0';
+    }
+    lastX = x;
+  }, { passive:false });
+
+  function endDrag(){
+    if (dragging && axisLocked === 'x') playRingWhoosh();
+    dragging = false;
+    axisLocked = null;
+  }
+  stage.addEventListener('pointerup', endDrag);
+  stage.addEventListener('pointercancel', endDrag);
 }
 
 /* ============================================================
@@ -1144,80 +1265,6 @@ function renderEvents(){
     addCorners(card);
     grid.appendChild(card);
   });
-}
-
-/* ============================================================
-   RENDER: GALLERY — 3 parallax columns instead of a grid
-   ============================================================ */
-function renderGallery(){
-  const grid = document.getElementById('gallery-grid');
-  const colCount = 3;
-  const cols = [];
-  for (let i=0;i<colCount;i++){
-    const col = document.createElement('div');
-    col.className = 'parallax-col';
-    grid.appendChild(col);
-    cols.push(col);
-  }
-
-  WEDDING_DATA.gallery.forEach((photo, i) => {
-    const item = document.createElement('div');
-    item.className = 'parallax-item';
-
-    const placeholder = document.createElement('div');
-    placeholder.className = 'parallax-placeholder';
-    placeholder.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="5" width="18" height="14" rx="1.5"/><circle cx="8.5" cy="10" r="1.5"/><path d="M21 16l-5-5-4 4-3-3-5 5"/></svg><span>${photo.caption}</span>`;
-
-    const img = document.createElement('img');
-    img.loading = 'lazy';
-    img.alt = photo.caption;
-    img.onload = () => img.classList.add('loaded');
-    img.onerror = () => { img.remove(); };
-    img.src = photo.src;
-
-    item.appendChild(placeholder);
-    item.appendChild(img);
-    item.addEventListener('click', () => openLightbox(img.classList.contains('loaded') ? photo.src : null));
-    cols[i % colCount].appendChild(item);
-  });
-}
-
-function initGalleryParallax(){
-  const cols = document.querySelectorAll('#gallery-grid .parallax-col');
-  if (!cols.length || reduceMotion) return;
-  const speeds = [0.88, 1.2, 0.98];
-  const section = document.getElementById('gallery');
-  let ticking = false;
-
-  function update(){
-    ticking = false;
-    const rect = section.getBoundingClientRect();
-    const vh = window.innerHeight || document.documentElement.clientHeight;
-    const progress = (vh - rect.top) / (vh + rect.height) * 2 - 1; // -1..1 across the section's pass through viewport
-    cols.forEach((col, i) => {
-      const offset = progress * 60 * speeds[i % speeds.length];
-      col.style.transform = 'translateY(' + offset.toFixed(1) + 'px)';
-    });
-  }
-  window.addEventListener('scroll', () => {
-    if (!ticking){ ticking = true; requestAnimationFrame(update); }
-  }, { passive:true });
-  document.addEventListener('scroll', () => {
-    if (!ticking){ ticking = true; requestAnimationFrame(update); }
-  }, { passive:true, capture:true });
-  update();
-}
-
-function openLightbox(src){
-  if (!src) return;
-  document.getElementById('lightbox-img').src = src;
-  document.getElementById('lightbox').classList.add('active');
-}
-document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
-document.getElementById('lightbox').addEventListener('click', (e)=>{ if(e.target.id==='lightbox') closeLightbox(); });
-function closeLightbox(){
-  document.getElementById('lightbox').classList.remove('active');
-  document.getElementById('lightbox-img').src = '';
 }
 
 /* ============================================================
@@ -1340,10 +1387,12 @@ function initMusic(){
    ============================================================ */
 function initShare(){
   document.getElementById('share-whatsapp').addEventListener('click', ()=>{
+    playSoftTick();
     const text = encodeURIComponent(WEDDING_DATA.share.whatsappText + window.location.href);
     window.open('https://wa.me/?text=' + text, '_blank');
   });
   document.getElementById('copy-link').addEventListener('click', (e)=>{
+    playSoftTick();
     const btn = e.currentTarget;
     const done = ()=>{
       const original = btn.textContent;
@@ -1378,6 +1427,7 @@ function initEntry(){
     if (opened) return;
     opened = true;
     if (window.__tryStartMusic) window.__tryStartMusic();
+    playSealChime();
 
     if (reduceMotion){
       entryScreen.classList.add('fade-out');
@@ -1424,14 +1474,15 @@ function initEntry(){
 renderHeroAndFooter();
 renderStory();
 renderEvents();
-renderGallery();
 renderVenue();
 makeParticles(document.getElementById('entry-particles'), 18);
 makeParticles(document.getElementById('hero-particles'), 22);
 startCountdown();
 initReveal();
-initGalleryParallax();
 initTilt();
+initCardScrollTilt();
+initCardTouchFeedback();
+initGalleryDrag();
 initMusic();
 initShare();
 initEntry();
